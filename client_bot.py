@@ -9,9 +9,9 @@ from flask import Flask
 app = Flask(__name__)
 
 # ================= НАСТРОЙКИ БОТА =================
-CLIENT_NAME = "nebula_bot"       # Имя проекта
-GROUP_ID = 243227412             # ID твоей группы ВК
-VK_TOKEN = "vk1.a.tjIJ7CqnErXpn4Vq_nzBKQBQMjb_NcJf4kiFaJZTZoEsJ4ZCz8eBu5Z8669wHETxyU6MQ_CwhnHTQfnHLMOG6kWYjzbwap1DhP98OOs8Pj2qurp0hu7u0mDR1Ub4vdGXAq-jcKbaqp9cawQ4QZ_qnSvwwIoXZn1YEcK_c7vAkwPnpW6fc6fd936xb6vF7NAt4yw76BK5X9HHnt3CS6EfxA"
+CLIENT_NAME = "sell_bot"       # Имя проекта
+GROUP_ID = 242774347             # ID твоей группы ВК
+VK_TOKEN = "vk1.a.q9RtV2818QWiCSFGgHLzR4gQr2xQ2fSIQKFbsrcoEudGaNSukxF_w-BSKNVvpWJhE6hON3wI9NBU5i96-0GVe0LTJ3so3jVMTfM6gQSZyWHkMO0187j0xC3ymyobpNhdxOUEAq5XsVnAdij_c9plT0lBdW-qD9cWxVw-Cp5ip7pCSkXvWBmAeJZ13rY2llgn3IczHjaPXOadwgLarLb96Q"
 
 # Твой ID — ты сразу главный Владелец в коде!
 MY_OWNER_ID = 897082738
