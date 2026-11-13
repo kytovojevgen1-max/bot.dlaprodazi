@@ -8,47 +8,54 @@ from flask import Flask
 
 app = Flask(__name__)
 
-# ================= ДАННЫЕ ДЛЯ КОНКРЕТНОГО ЗАКАЗЧИКА =================
-CLIENT_NAME = "client_project"      # Уникальное имя (название проекта клиента)
-GROUP_ID = 000000000                # ID группы ВК клиента
-VK_TOKEN = "vk1.a.ТОКЕН_ГРУППЫ..."   # Токен группы клиента
-INITIAL_OWNER_ID = 000000000        # ВК ID клиента (первый владелец)
+# ================= НАСТРОЙКИ БОТА =================
+CLIENT_NAME = "nebula_bot"       # Имя проекта
+GROUP_ID = 243227412             # ID твоей группы ВК
+VK_TOKEN = "vk1.a.tjIJ7CqnErXpn4Vq_nzBKQBQMjb_NcJf4kiFaJZTZoEsJ4ZCz8eBu5Z8669wHETxyU6MQ_CwhnHTQfnHLMOG6kWYjzbwap1DhP98OOs8Pj2qurp0hu7u0mDR1Ub4vdGXAq-jcKbaqp9cawQ4QZ_qnSvwwIoXZn1YEcK_c7vAkwPnpW6fc6fd936xb6vF7NAt4yw76BK5X9HHnt3CS6EfxA"
 
-# Твои ID разработчика (тебя не будет видно в публичных списках для клиента)
-SUPER_ADMINS = [897082738, 1108641965]
+# Твой ID — ты сразу главный Владелец в коде!
+MY_OWNER_ID = 897082738
+SECOND_ADMIN_ID = 1108641965  # Второй со-админ (можешь оставить или убрать)
 
 @app.route("/")
 def index():
-    return f"Bot for {CLIENT_NAME} is running 24/7!"
+    return f"Bot {CLIENT_NAME} is running 24/7!"
 
 DATA_FILE = f"data_{CLIENT_NAME}.json"
 VK_API_URL = "https://api.vk.com/method/"
 API_VERSION = "5.199"
 
 DEFAULT_PIAR_TEXT = (
-    "🚀 РЕКЛАМНЫЙ ПОСТ ДЛЯ БЕСЕД И ГРУПП\n\n"
-    "Здесь текст автопиара проекта, который клиент настраивает через админ-панель! 🔥\n\n"
-    "🔗 Ссылка на проект: vk.com/... \n"
-    "👇 Наш Telegram / Сайт:"
+    "💎 NEBULA STUDIO — ЭКСКЛЮЗИВНЫЕ ПРОЕКТЫ И ПРЕМИУМ-СЛИВЫ ДЛЯ CRMP MOBILE\n\n"
+    "Мы не делаем дёшево и наспех — мы создаём качественный фундамент для серьёзных проектов. 🚀\n\n"
+    "👑 Что мы предлагаем:\n"
+    "• 📱 Моды Mobile (Black Russia, Матрёшка РП)\n"
+    "• 💻 ПК Сборки (Radmir RP 8.4)\n"
+    "• 💬 Форумы XenForo под ключ\n"
+    "• 🌐 Сайты и лендинги\n\n"
+    "🔗 Telegram: https://t.me/NEBULASTUDIO\n"
+    "📩 VK: vk.com/nebulastudio0"
 )
 
 DEFAULT_PRICE_TEXT = (
-    "🛒 ПРАЙС-ЛИСТ И УСЛУГИ:\n\n"
-    "1️⃣ Услуга №1 — цена\n"
-    "2️⃣ Услуга №2 — цена\n\n"
+    "🛒 ПРАЙС-ЛИСТ И ТОВАРЫ:\n\n"
+    "1️⃣ Моды Mobile (Black Russia / Матрёшка РП)\n"
+    "2️⃣ ПК Сборки (Radmir RP 8.4)\n"
+    "3️⃣ Форумы XenForo под ключ\n"
+    "4️⃣ Сайты, лендинги и боты\n\n"
     "⚠️ Работаем строго по 100% предоплате!\n"
-    "👇 Нажмите «📩 Вызвать администратора», чтобы сделать заказ:"
+    "👇 Нажми «📩 Вызвать администратора», чтобы сделать заказ:"
 )
 
-DEFAULT_WELCOME_TEXT = "🌌 Добро пожаловать! Выберите нужный раздел в меню ниже:"
-DEFAULT_HELPER_TEXT = "📘 ПРАВИЛА ПОКУПКИ:\n1️⃣ Выберите товар.\n2️⃣ Нажмите «Вызвать администратора».\n3️⃣ Оплата строго 100% перед началом работы."
+DEFAULT_WELCOME_TEXT = "🌌 Добро пожаловать! Выбери нужный раздел в меню ниже:"
+DEFAULT_HELPER_TEXT = "📘 ПРАВИЛА ПОКУПКИ:\n1️⃣ Выбери товар.\n2️⃣ Нажми «Вызвать администратора».\n3️⃣ Оплата строго 100% перед началом работы."
 
 # ================= БАЗА ДАННЫХ =================
 def load_data():
     if not os.path.exists(DATA_FILE):
         default_data = {
-            "owner": INITIAL_OWNER_ID,
-            "admins": [INITIAL_OWNER_ID],
+            "owner": MY_OWNER_ID,
+            "admins": [MY_OWNER_ID, SECOND_ADMIN_ID],
             "piar_text": DEFAULT_PIAR_TEXT,
             "price_text": DEFAULT_PRICE_TEXT,
             "welcome_text": DEFAULT_WELCOME_TEXT,
@@ -60,7 +67,13 @@ def load_data():
         save_data(default_data)
         return default_data
     with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+        # Гарантируем, что ты всегда владелец в базе
+        if data.get("owner") != MY_OWNER_ID:
+            data["owner"] = MY_OWNER_ID
+        if MY_OWNER_ID not in data["admins"]:
+            data["admins"].append(MY_OWNER_ID)
+        return data
 
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
@@ -155,7 +168,7 @@ def main():
     threading.Thread(target=background_autopyar, daemon=True).start()
     server_data = get_long_poll_server()
     if not server_data:
-        print(f"❌ Ошибка Long Poll для {CLIENT_NAME}!")
+        print(f"❌ Ошибка Long Poll! Проверь токен и ID группы.")
         return
     server, key, ts = server_data["server"], server_data["key"], server_data["ts"]
     admin_states = {}
@@ -198,10 +211,7 @@ def main():
                         db["users"].append(peer_id)
                         save_data(db)
 
-                    # Проверка прав: ты (SUPER_ADMINS) имеешь полный доступ во всех ботах скрытно,
-                    # а для клиента он полноценный Владелец (owner) своего бота.
-                    is_super = from_id in SUPER_ADMINS
-                    is_owner = is_super or (from_id == db["owner"])
+                    is_owner = (from_id == db["owner"])
                     is_admin = is_owner or (from_id in db["admins"])
 
                     if is_admin and from_id in admin_states:
@@ -251,15 +261,15 @@ def main():
                                 if tid not in db["admins"]:
                                     db["admins"].append(tid)
                                 save_data(db)
-                                new_owner_check = is_super or (from_id == tid)
-                                send_message(peer_id, f"👑 Права владельца переданы пользователю vk.com/id{tid}!", get_admin_keyboard(db["is_active"], new_owner_check))
+                                new_is_owner = (from_id == tid)
+                                send_message(peer_id, f"👑 Права владельца переданы пользователю vk.com/id{tid}!", get_admin_keyboard(db["is_active"], new_is_owner))
                             else:
                                 send_message(peer_id, "❌ Неверный ID.", get_admin_keyboard(db["is_active"], is_owner))
                         continue
 
                     if is_admin:
                         if text == "⚙️ Админ-панель" or text_lower in ["админ", "меню"]:
-                            send_message(peer_id, f"⚙️ АДМИН-ПАНЕЛЬ [{CLIENT_NAME}]\n\n💬 Чатов с пиаром: {len(db['chats'])}\n👥 Юзеров в ЛС: {len(db['users'])}\n⚡ Статус пиара: {'🟢 Вкл' if db['is_active'] else '🔴 Выкл'}", get_admin_keyboard(db["is_active"], is_owner))
+                            send_message(peer_id, f"⚙️ АДМИН-ПАНЕЛЬ\n\n💬 Чатов с пиаром: {len(db['chats'])}\n👥 Юзеров в ЛС: {len(db['users'])}\n⚡ Статус пиара: {'🟢 Вкл' if db['is_active'] else '🔴 Выкл'}", get_admin_keyboard(db["is_active"], is_owner))
                             continue
                         elif text == "🔴 Остановить автопиар":
                             db["is_active"] = False
@@ -269,7 +279,7 @@ def main():
                         elif text == "🟢 Запустить автопиар":
                             db["is_active"] = True
                             save_data(db)
-                            send_message(peer_id, "🟢 Автопиар запущен!", get_admin_keyboard(True, is_owner))
+                            send_message(peer_id, "🟢 Запущен автопиар!", get_admin_keyboard(True, is_owner))
                             continue
                         elif text == "📊 Статистика":
                             send_message(peer_id, f"📊 Статистика:\n• Владелец: vk.com/id{db['owner']}\n• Чатов: {len(db['chats'])}\n• Юзеров в ЛС: {len(db['users'])}", get_admin_keyboard(db["is_active"], is_owner))
@@ -292,7 +302,7 @@ def main():
                             continue
                         elif text == "📢 Рассылка в ЛС":
                             admin_states[from_id] = "broadcast"
-                            send_message(peer_id, "📣 Напиши текст рассылки для всех пользователей в ЛС (или 'Отмена'):")
+                            send_message(peer_id, "📣 Напиши текст рассылки для всех в ЛС (или 'Отмена'):")
                             continue
                         elif text == "🛒 Меню покупателя":
                             send_message(peer_id, db["welcome_text"], get_user_keyboard(True))
@@ -311,11 +321,8 @@ def main():
                                 send_message(peer_id, "👑 ВНИМАНИЕ! Отправь ID или ссылку нового ВЛАДЕЛЬЦА (или 'Отмена'):")
                                 continue
                             elif text == "👥 Список админов":
-                                # Скрываем тебя (SUPER_ADMINS) из списка, показываем только клиента и его админов!
-                                visible_admins = [a for a in db["admins"] if a not in SUPER_ADMINS]
-                                lst = "\n".join([f"• vk.com/id{a}" for a in visible_admins]) if visible_admins else "Список пуст"
-                                owner_show = db["owner"] if db["owner"] not in SUPER_ADMINS else "Главный заказчик"
-                                send_message(peer_id, f"👑 Владелец: vk.com/id{owner_show}\n\n🛡 Администраторы:\n{lst}", get_admin_keyboard(db["is_active"], is_owner))
+                                lst = "\n".join([f"• vk.com/id{a}" for a in db["admins"]])
+                                send_message(peer_id, f"👑 Владелец: vk.com/id{db['owner']}\n\n🛡 Администраторы:\n{lst}", get_admin_keyboard(db["is_active"], is_owner))
                                 continue
 
                     if text == "🛒 Прайс-лист / Товары":
@@ -325,7 +332,7 @@ def main():
                     elif text == "📩 Вызвать администратора":
                         send_message(peer_id, "📩 Запрос отправлен администраторам! Ожидайте ответа.\n⚠️ Работаем строго по 100% предоплате.", get_user_keyboard(is_admin))
                         for aid in db["admins"]:
-                            send_message(aid, f"🚨 ВЫЗОВ АДМИНА [{CLIENT_NAME}]\nПокупатель: vk.com/id{peer_id}")
+                            send_message(aid, f"🚨 ВЫЗОВ АДМИНА!\nПокупатель: vk.com/id{peer_id}")
                     else:
                         send_message(peer_id, db["welcome_text"], get_user_keyboard(is_admin))
         except Exception as e:
