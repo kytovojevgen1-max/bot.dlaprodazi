@@ -9,13 +9,13 @@ from flask import Flask
 app = Flask(__name__)
 
 # ================= НАСТРОЙКИ БОТА =================
-CLIENT_NAME = "sell_bot"       # Имя проекта
+CLIENT_NAME = "sell_bot"         # Имя проекта
 GROUP_ID = 242774347             # ID твоей группы ВК
 VK_TOKEN = "vk1.a.q9RtV2818QWiCSFGgHLzR4gQr2xQ2fSIQKFbsrcoEudGaNSukxF_w-BSKNVvpWJhE6hON3wI9NBU5i96-0GVe0LTJ3so3jVMTfM6gQSZyWHkMO0187j0xC3ymyobpNhdxOUEAq5XsVnAdij_c9plT0lBdW-qD9cWxVw-Cp5ip7pCSkXvWBmAeJZ13rY2llgn3IczHjaPXOadwgLarLb96Q"
 
 # Твой ID — ты сразу главный Владелец в коде!
 MY_OWNER_ID = 897082738
-SECOND_ADMIN_ID = 1108641965  # Второй со-админ (можешь оставить или убрать)
+SECOND_ADMIN_ID = 1108641965  # Второй со-админ
 
 @app.route("/")
 def index():
@@ -68,7 +68,6 @@ def load_data():
         return default_data
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-        # Гарантируем, что ты всегда владелец в базе
         if data.get("owner") != MY_OWNER_ID:
             data["owner"] = MY_OWNER_ID
         if MY_OWNER_ID not in data["admins"]:
@@ -165,7 +164,6 @@ def get_long_poll_server():
     return res.get("response")
 
 def main():
-    threading.Thread(target=background_autopyar, daemon=True).start()
     server_data = get_long_poll_server()
     if not server_data:
         print(f"❌ Ошибка Long Poll! Проверь токен и ID группы.")
@@ -340,7 +338,7 @@ def main():
 
 if __name__ == "__main__":
     threading.Thread(target=background_autopyar, daemon=True).start()
-    threading.Thread(target=target := main, daemon=True).start()
+    threading.Thread(target=main, daemon=True).start()
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
