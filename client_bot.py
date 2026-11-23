@@ -9,9 +9,9 @@ from flask import Flask
 app = Flask(__name__)
 
 # ================= НАСТРОЙКИ БОТА =================
-CLIENT_NAME = "sell_bot"         # Имя проекта
-GROUP_ID = 242774347             # ID твоей группы ВК
-VK_TOKEN = "vk1.a.q9RtV2818QWiCSFGgHLzR4gQr2xQ2fSIQKFbsrcoEudGaNSukxF_w-BSKNVvpWJhE6hON3wI9NBU5i96-0GVe0LTJ3so3jVMTfM6gQSZyWHkMO0187j0xC3ymyobpNhdxOUEAq5XsVnAdij_c9plT0lBdW-qD9cWxVw-Cp5ip7pCSkXvWBmAeJZ13rY2llgn3IczHjaPXOadwgLarLb96Q"
+CLIENT_NAME = "piar_bot"         # Имя проекта
+GROUP_ID = 243637022             # ID твоей группы ВК
+VK_TOKEN = "vk1.a.opFBwfbF6ykIUm2aVTFXIpAdPmu79wWw7EaAkUeviA2wYQkwnNstzdBPy9scxQn200BqUnzoPwZvUQ1rTObBCHeTCEq4tmwzIy3KQwTtLvtKdvNjrE8CXw0z0r-XtM4h37RYFMflcZiDKOc6NMiiOS_yFPFqfq1xeOFgjn6gO1FeY8SUXqw9VUM5KZkD3qfJ4HBJr9ULxE6Ab-dHTAsyXw"
 
 # Твой ID — ты сразу главный Владелец в коде!
 MY_OWNER_ID = 897082738
